@@ -19,6 +19,7 @@ try {
 
 debug( "init ...");
 bot.onText( /@brandma_bot (.+)/, ( msg, match) => {
+debug( JSON.stringify( msg, null, 2));
   const chatId = msg.chat.id;
   const resp = match[1]; 
   let input = [];
@@ -58,23 +59,27 @@ bot.onText( /@brandma_bot (.+)/, ( msg, match) => {
           let obj = data[input[1]].content[val];
           msgOut.push( `${ val} (${ obj.count}): ${ obj.person.join( " ,")}`);
         }
-        bot.sendMessage( chatId, msgOut.join( "\n"));
+	if( msgOut.length === 0) {
+		bot.sendMessage( chatId, "Order is null");
+	} else {
+		bot.sendMessage( chatId, msgOut.join( "\n"));
+	}
       }
 
       break;
     case "/close":
       if ( !data[input[1]]) {
-        return bot.sendMessage( chatId, "Order not found!");
+	      return bot.sendMessage( chatId, "Order not found!");
       }
 
       {
-        let msgOut = [];
-        for( let val in data[input[1]].content) {
-          let obj = data[input[1]].content[val];
-          msgOut.push( `${ val} (${ obj.count}): ${ obj.person.join( " ,")}`);
-        }
-        msgOut.push( `Order: ${ input[1]} closed!`);
-        bot.sendMessage( chatId, msgOut.join( "\n"));
+	      let msgOut = [];
+	      for( let val in data[input[1]].content) {
+		      let obj = data[input[1]].content[val];
+		      msgOut.push( `${ val} (${ obj.count}): ${ obj.person.join( " ,")}`);
+	      }
+	      msgOut.push( `Order: ${ input[1]} closed!`);
+	      bot.sendMessage( chatId, msgOut.join( "\n"));
       }
 
       delete data[input[1]];
@@ -82,17 +87,22 @@ bot.onText( /@brandma_bot (.+)/, ( msg, match) => {
       break;
     default:
       if ( !data[input[0]]) {
-        return bot.sendMessage( chatId, "Order not found!");
+	      return bot.sendMessage( chatId, "Order not found!");
       }
 
+      if( !input[1]) {
+	      return bot.sendMessage( chatId, "Meal not found!");
+      }
+
+
       if ( data[input[0]].content[input[1]]) {
-        data[input[0]].content[input[1]].count += 1;
-        data[input[0]].content[input[1]].person.push( msg.from.username);
+	      data[input[0]].content[input[1]].count += 1;
+	      data[input[0]].content[input[1]].person.push( msg.from.username);
       } else {
-        data[input[0]].content[input[1]] = {
-          count: 1,
-          person: [ msg.from.username],
-        };
+	      data[input[0]].content[input[1]] = {
+count: 1,
+       person: [ msg.from.username],
+	      };
       }
 
       bot.sendMessage( chatId, `add : ${ input[1]}`);
@@ -105,9 +115,9 @@ bot.onText( /@brandma_bot (.+)/, ( msg, match) => {
 
 
 function saveData( json) {
-  fs.writeFile( path.join( __dirname, "data.json"), JSON.stringify( json, null, 2), 'utf8', function ( err) {
-    if ( err) {
-      debug( err);
-    }
-  });
+	fs.writeFile( path.join( __dirname, "data.json"), JSON.stringify( json, null, 2), 'utf8', function ( err) {
+			if ( err) {
+			debug( err);
+			}
+			});
 }
