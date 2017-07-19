@@ -1,3 +1,6 @@
+/* globals conf */
+/* eslint no-case-declarations: 0 */
+/* eslint-env es6*/
 "use strict";
 const path = require("path");
 global.conf = require( path.join( __dirname, "config.js"));
@@ -50,6 +53,7 @@ bot.onText( /@brandma_bot (.+)/, ( msg, match) => {
       saveData( data);
       break;
     case "/status":
+      debug( input);
       if ( !data[input[1]]) {
         return bot.sendMessage( chatId, "Order not found!");
       }
@@ -66,21 +70,20 @@ bot.onText( /@brandma_bot (.+)/, ( msg, match) => {
           bot.sendMessage( chatId, msgOut.join( "\n"));
         }
       }
-
       break;
     case "/close":
       if ( !data[input[1]]) {
-	      return bot.sendMessage( chatId, "Order not found!");
+        return bot.sendMessage( chatId, "Order not found!");
       }
 
       {
-	      let msgOut = [];
-	      for( let val in data[input[1]].content) {
-		      let obj = data[input[1]].content[val];
-		      msgOut.push( `${ val} (${ obj.count}): ${ obj.person.join( " ,")}`);
-	      }
-	      msgOut.push( `Order: ${ input[1]} closed!`);
-	      bot.sendMessage( chatId, msgOut.join( "\n"));
+        let msgOut = [];
+        for( let val in data[input[1]].content) {
+          let obj = data[input[1]].content[val];
+          msgOut.push( `${ val} (${ obj.count}): ${ obj.person.join( " ,")}`);
+        }
+        msgOut.push( `Order: ${ input[1]} closed!`);
+        bot.sendMessage( chatId, msgOut.join( "\n"));
       }
 
       delete data[input[1]];
@@ -113,7 +116,7 @@ bot.onText( /@brandma_bot (.+)/, ( msg, match) => {
       if ( !data[input[1]]) {
         return bot.sendMessage( chatId, "Order not found!");
       }
-      if ( !data[input[2]]) {
+      if ( !input[2]) {
         return bot.sendMessage( chatId, "Meal not found!");
       }
       if ( data[input[1]].content[input[2]]) {
@@ -138,9 +141,9 @@ bot.onText( /@brandma_bot (.+)/, ( msg, match) => {
 
 
 function saveData( json) {
-	fs.writeFile( path.join( __dirname, "data.json"), JSON.stringify( json, null, 2), 'utf8', function ( err) {
-			if ( err) {
-			debug( err);
-			}
-			});
+  fs.writeFile( path.join( __dirname, "data.json"), JSON.stringify( json, null, 2), 'utf8', function ( err) {
+    if ( err) {
+      debug( err);
+    }
+  });
 }
