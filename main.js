@@ -131,6 +131,9 @@ bot.onText( /@brandma_bot (.+)/, ( msg, match) => {
       bot.sendMessage( chatId, `add : ${ input[2]}`);
       saveData( data);
       break;
+    case "/help":
+      bot.sendMessage( chatId, "@brandma_bot /new orderName\n@brandma_bot /add orderName item\n@brandma_bot /status orderName\n@brandma_bot /close orderName\n@brandma_bot /checkDomain domainName");
+      break;
     default:
       bot.sendMessage( chatId, "懶得理你~");
       break;
